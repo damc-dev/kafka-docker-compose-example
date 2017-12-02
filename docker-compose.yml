@@ -10,24 +10,27 @@ services:
     ports:
       - "9092:9092"
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
+      KAFKA_ADVERTISED_HOST_NAME: 192.168.1.30
+      KAFKA_ADVERTISED_PORT: 9092
       KAFKA_CREATE_TOPICS: "test:1:1"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   producer:
     build: ./producer
+    environment:
+      BOOTSTRAP_SERVERS: 'kafka:9092'
     volumes:
      - ./producer:/code
     depends_on: 
      - kafka
     links:
-     - kafka
+    - kafka:kafka
   consumer:
     build: ./consumer
-    volumes:
-     - ./consumer:/code
+    environment:
+      BOOTSTRAP_SERVERS: 'kafka:9092'
     depends_on: 
      - kafka
     links:
-     - kafka
+     - kafka:kafka

@@ -1,6 +1,15 @@
 from kafka import KafkaProducer
 import json
-producer = KafkaProducer(bootstrap_servers='localhost:9092', api_version=(0,10), value_serializer=lambda v: json.dumps(v).encode('utf-8'))
+from os import environ
+import sys
+
+servers =  environ.get('BOOTSTRAP_SERVERS')
+if servers is None:
+    sys.exit('Missing Env Variable BOOTSTRAP_SERVERS')
+
+print("Connecting to bootstrap_servers: %s" % servers)
+
+producer = KafkaProducer(bootstrap_servers=servers, api_version=(0,10), value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 futures = []
 for x in range(100):
     data = {'id': x, 'foo': 'bar'}
